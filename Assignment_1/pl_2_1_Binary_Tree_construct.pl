@@ -1,0 +1,14 @@
+﻿list_distri(_,[],[],[]).
+list_distri(X0,[X1|R],Llist,Rlist):-
+                                    X0<X1,
+                                        list_distri(X0,R,Llist,Rlist0),
+                                        append([X1],Rlist0,Rlist).
+list_distri(X0,[X1|R],Llist,Rlist):-
+                                    X0>=X1,
+                                        list_distri(X0,R,Llist0,Rlist),
+                                        append([X1],Llist0,Llist).
+construct([],nil):-!.
+construct([X|R],tree(X,Ltree,Rtree)):-
+                                        list_distri(X,R,Llist,Rlist),
+                                        construct(Llist,Ltree),
+                                        construct(Rlist,Rtree).
