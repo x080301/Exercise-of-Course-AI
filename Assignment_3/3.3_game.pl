@@ -100,6 +100,8 @@ init_game(N):-
 % runs the game
 
 run_game:-
+    
+    repeat,
 
     state(Round,N,Player),
     retract(state(Round,N,Player)),
@@ -110,13 +112,11 @@ run_game:-
     Remains is N-Action,
     print(Player,Action,Remains),
 
-    (Remains>0,
     New_round is Round+1,
     New_player is Player*(-1),
     assertz(state(New_round,Remains,New_player)),
-    run_game;
 
-    Remains=<0).
+    Remains=<0.
 
 game(N):-
 
@@ -134,7 +134,7 @@ decision_human(Action):-
     write("I want to take: "),
     read(Action).
 
-init_game_human(Player):
+init_game_human(Player):-
 
     write("I want to be (Max/Min)"),nl,
     read(Action).
