@@ -40,7 +40,7 @@ get_utility_value(N,Player,Value):-
 % -----------------------------------------------------------
 
 % when the Max can find a Max or the Min can find a Min, returns that Action.
-% when can not randomly decides one.
+% when can not -> randomly decides one.
 make_decision(Player,Player,_,_,1).
 make_decision(Player,_,Player,_,2).
 make_decision(Player,_,_,Player,3).
@@ -125,20 +125,31 @@ game(N):-
     run_game.
     
 % -----------------------------------------------------------
-% runs the game with Max and a human player.
-% game_Max_human(N)
-% N is the number of matchs at the begining.
+% test and discussion 
 % -----------------------------------------------------------
 
-decision_human(Action):-
-    write("I want to take: "),
-    read(Action).
+% ?-game(N). N is how many matchs at the begining.
 
-init_game_human(Player):-
+% Example:
 
-    write("I want to be (Max/Min)"),nl,
-    read(Action).
+% ?-game(10).
+% 
+% Round 1: Max take 2 matchs, and 8 remain
+% Round 2: Min take 2 matchs, and 6 remain
+% Round 3: Max take 2 matchs, and 4 remain
+% Round 4: Min take 3 matchs, and 1 remain
+% Round 5: Max take 1 matchs, and win the game.
+% true .
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % to be continue
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ?-game(12).
+%
+% Round 1: Max take 1 matchs, and 11 remain
+% Round 6: Round 2: Min take 3 matchs, and 8 remain
+% Round 3: Max take 3 matchs, and 5 remain
+% Round 4: Min take 1 matchs, and 4 remain
+% Round 5: Max take 1 matchs, and 3 remain
+% Round 6: Min take 3 matchs, and win the game.
+% true .
+
+% Unless (N mod 4) = 0, Max can always win the game.
+% When (N mod 4) = 0, Min wins.
