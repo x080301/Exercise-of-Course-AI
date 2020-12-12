@@ -7,4 +7,6 @@ test(Updated_list):-
     init([edge(a,b,15),edge(a,c,10),edge(a,c,6),edge(b,d,6)]),
     update_not_reached_nodes([node(a,1,1),node(b,2,2),node(c,1,3),node(d,10,4)],node(b,1,[b]),Updated_list).
 
-search([edge(a,b,15),edge(a,c,10),edge(a,c,6),edge(b,d,6)],a,d,P).
+search([edge(a,b,15),edge(a,c,10),edge(b,c,6),edge(b,d,6)],a,d,P).
+search([edge(a,b,15),edge(a,c,10),edge(b,c,6),edge(b,d,20)],a,d,P).
+search([edge(a,b,15),edge(a,c,10),edge(b,c,6),edge(b,d,20),edge(d,e,7)],a,d,P).
