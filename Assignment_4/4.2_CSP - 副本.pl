@@ -81,19 +81,6 @@ count([_|R],Num):-
     count(R,Num_d),
     Num is Num_d+1.
 
-% puts something on the Idth place of the list.
-put([X|R],Value,Id,Idl,Listout):-
-    (
-      Id=Idl,
-      Listout=[Value|R]
-      ;
-      not(Id=Idl),
-      Idld is Idl+1,
-      put(R,Value,Id,Idld,Listout_d),
-      Listout=[X|Listout_d]
-    ).
-put(List_in,Value,Id,List_out):-put(List_in,Value,Id,1,List_out).
-
 % Number of members in a contrains list
 count_member_with_Xa(_,[],0).
 count_member_with_Xa(Xa,[X|R],Number_members):-
@@ -239,11 +226,36 @@ order_cv_list(List_cv,Ordered_lcv_value):-
 
     order_cv_list(List_cv_set_max_m1,Ordered_lcv_value_d),
 
-    Max_id_m1 is Max_id-1,
-    append([Max_id_m1],Ordered_lcv_value_d,Ordered_lcv_value).
+    append([Max_id],Ordered_lcv_value_d,Ordered_lcv_value).
 
 
+% chooses a value according to lcv
+% the value shoud rules out the fewest values in the remaining variables,
+% in other words most possibole values in the remaining variables,
 
+lCv([_|Dsr],Cs,Vs,Id):-
+
+    apply(Vs,Id,V),
+    (integer(V);atom(V)),
+        
+        Idd is Id +1,
+        
+        lCv(Dsr,Cs,Vs,Idd).
+
+lCv([L|_],Cs,Vs,Id):-
+
+    apply(Vs,Id,V),    
+
+		not(integer(V);atom(V)),% True if Term is not bound to an integer or atom.       
+
+        domain(L,Xs),
+
+        get_cv_list(Xs,Id,Cs,Vs,List_cv),        
+
+        order_cv_list(List_cv,Ordered_lcv_value),
+             
+        
+        contains(Ordered_lcv_value,V).
         
 
 generate_list(_,_,_,[],[]).
@@ -357,67 +369,6 @@ set_new_state([V|Vsr],Id,Max_id,State2):-
       State2=[V|State2_d]
     ).
 
-
-caculate_cv_in_Xs(_,[],_,_,0).
-caculate_cv_in_Xs(Cs,[X|Xsr],Vs,Id,Num):-
-    caculate_cv_in_Xs(Cs,Xsr,Vs,Id,Num_d),
-    put(Vs,X,Id,New_Vs),
-    (
-      consistent(Cs,New_Vs),
-      Num is Num_d+1
-      ;
-      not(consistent(Cs,New_Vs)),
-      Num is Num_d
-    ).
-
-caculate_cv_in_Vs(_,[],_,[],_,0).
-caculate_cv_in_Vs(Cs,[L|Dsr],Vs,[V|Vsr],Id,Num):-
-    Idd is Id+1,
-    caculate_cv_in_Vs(Cs,Dsr,Vs,Vsr,Idd,Num_d),
-    (
-      integer(V),
-      Num is Num_d
-      ;
-      not(integer(V)),
-      domain(L,Xs),
-      caculate_cv_in_Xs(Cs,Xs,Vs,Id,Num_m),
-      Num is Num_m+Num_d
-    ).
-
-caculate_cv_in_Vs(Cs,Ds,Vs,Num):-
-    caculate_cv_in_Vs(Cs,Ds,Vs,Vs,1,Num).
-
-get_cv_list(_,_,[],_,_,[]).
-get_cv_list(Cs,Ds,[X|Xsr],Vs,Id,List_out):-
-    get_cv_list(Cs,Ds,Xsr,Vs,Id,List_out_d),
-    
-    put(Vs,X,Id,New_Vs),
-    caculate_cv_in_Vs(Cs,Ds,New_Vs,Num),
-    List_out=[Num|List_out_d].
-
-
-
-% chooses a value according to lcv
-% the value shoud rules out the fewest values in the remaining variables,
-% in other words most possibole values in the remaining variables,
-
-lCv(Cs,Ds,[L|Dsr],Vs,[V|Vsr],Id):-
-    (
-      (integer(V);atom(V)),
-      Idd is Id+1,
-      lCv(Cs,Ds,Dsr,Vs,Vsr,Idd)
-      ;
-      not(integer(V);atom(V)),
-        domain(L,Xs),
-        get_cv_list(Cs,Ds,Xs,Vs,Id,Listout),
-        
-        order_cv_list(Listout,Ordered_cv),
-        contains(Ordered_cv,V)
-    ).
-
-lCv(Cs,Ds,Vs):-lCv(Cs,Ds,Ds,Vs,Vs,1).
-
-
 %state [none,none,2,none] means you randomly chose field 2 for the 3rd row as a start
 %state2[none,1,2,none]<-State2 = [none, Empty_value, 2, none], the Empty value will be set in lCv
 
@@ -432,8 +383,9 @@ loops(Ds,Cs,Vs,Vs_u):-
     
     
     mrv(Ds,Cs,Vs,Vs_d),
-    !,
-    lCv(Cs,Ds,Vs_d),
+    write(Vs),
+    
+    lCv(Ds,Cs,Vs_d,1),
   
     
     isAssignment(Ds,Vs_d),
@@ -454,31 +406,6 @@ loops(Ds,Cs,Vs,Vs_u):-
 solve(Ds,Cs,Vs):-contains([0,1,2,3],N),loops(Ds,Cs,[none, N, none, none],Vs).
 test(Vs):-queensDomains(Ds),queensConstraints(Cs),solve(Ds,Cs,Vs).
 
-
-% --------------------------
 % test 
-% --------------------------
 % ?- test(Vs).
-% Vs = [2, 0, 3, 1] ;
-% Vs = [2, 0, 3, 1] ;
-% Vs = [1, 3, 0, 2] ;
-% Vs = [1, 3, 0, 2] ;
-% --------------------------
-% ?- queensDomains(Ds),queensConstraints(Cs),mrv(Ds,Cs,[none,none,2,none],State2).
-% ...
-% State2 = [none, _12610, 2, none] .
-
-% _12610(V) is bonded to an integer in lCv
-% --------------------------
-% ?- queensDomains(Ds),queensConstraints(Cs),lCv(Cs,Ds,[none, V, 2, none]).
-% ...
-% V = 3 ;
-% ...
-% V = 0 ;
-% ...
-% V = 1 ;
-% ...
-% V = 2 ;
-% --------------------------
-
-
+% Vs = [2, 0, 3, 1].
