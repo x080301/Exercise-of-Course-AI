@@ -144,7 +144,7 @@ game(N):-
 % ?-game(12).
 %
 % Round 1: Max take 1 matchs, and 11 remain
-% Round 6: Round 2: Min take 3 matchs, and 8 remain
+% Round 2: Min take 3 matchs, and 8 remain
 % Round 3: Max take 3 matchs, and 5 remain
 % Round 4: Min take 1 matchs, and 4 remain
 % Round 5: Max take 1 matchs, and 3 remain
