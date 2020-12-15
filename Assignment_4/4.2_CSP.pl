@@ -454,6 +454,7 @@ loops(Ds,Cs,Vs,Vs_u):-
 solve(Ds,Cs,Vs):-contains([0,1,2,3],N),loops(Ds,Cs,[none, N, none, none],Vs).
 test(Vs):-queensDomains(Ds),queensConstraints(Cs),solve(Ds,Cs,Vs).
 
+testR(Vs):-queensDomains(Ds),queensConstraints(Cs),random(0,4,N),loops(Ds,Cs,[none, N, none, none],Vs).
 
 % --------------------------
 % test 
